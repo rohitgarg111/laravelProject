@@ -10,8 +10,8 @@
             {!! Form::text('title',null,['class'=>'form-control']) !!}
         </div>
         <div class="form-group">
-            {!! Form::label('category_id','Category:') !!}
-            {!! Form::select('category_id',array(''=>'options','1'=>'1'),null,['class'=>'form-control']) !!}
+            {!! Form::label('category_id','Category:') !!}            
+            {!! Form::select('category_id',[''=>'Choose categories']+$categories,null,['class'=>'form-control']) !!}
         </div>
         <div class="form-group">
             {!! Form::label('photo_id','Photo:') !!}
