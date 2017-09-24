@@ -7,6 +7,7 @@ use App\Photo;
 use App\Http\Requests\UsersRequest;
 use App\Http\Requests\UsersEditRequest;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Session;
 
 use App\Http\Requests;
 
@@ -50,9 +51,11 @@ class AdminUsersController extends Controller
             $file->move('images',$name); // automatically creates folder to get images
             $photo = Photo::create(['file'=>$name]);
             //when it inserts data it automatically brings last row id
+            
             $input['photo_id'] = $photo->id;
         }
-        $input['password'] = bcrypt($request->password);
+        //$input['password'] = bcrypt($request->password);
+        // we are encrypting password in user model using mutators
         User::create($input);
         
        return redirect('/admin/users');
@@ -97,7 +100,8 @@ class AdminUsersController extends Controller
             $input = $request->except('password');
         }else{
             $input = $request->all();
-            $input['password'] = bcrypt($request->password);
+            //$input['password'] = bcrypt($request->password);
+            // we are encrypting password in user model using mutators
         }        
         if($file = $request->file('photo_id')){
             $name = time().$file->getClientOriginalName();
@@ -118,7 +122,11 @@ class AdminUsersController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
-    {
-        //
+    {       
+        $user = User::findOrFail($id); 
+        unlink(public_path() . $user->photo->file);
+        $user->delete();
+        Session::flash('deleted_user','The user has been deleted');
+        return redirect('/admin/users');
     }
 }
